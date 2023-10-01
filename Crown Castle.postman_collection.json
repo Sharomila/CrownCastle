@@ -1,0 +1,344 @@
+{
+	"info": {
+		"_postman_id": "da51a7b9-eb60-43ab-856e-9c14e00ce2ab",
+		"name": "Crown Castle",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30130294"
+	},
+	"item": [
+		{
+			"name": "Confirm Site is Up",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var status = pm.response.code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"if (status !==200) {\r",
+							"console.log (\"Site is down\")\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://deckofcardsapi.com/",
+					"protocol": "https",
+					"host": [
+						"deckofcardsapi",
+						"com"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Deck",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var status = pm.response.code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"if (status == 200) {\r",
+							"var_deck_id = jsonData.deck_id;\r",
+							"console.log(\"Deck_ID=\",var_deck_id);\r",
+							"pm.environment.set(\"evar_deck_id\", var_deck_id);\r",
+							"postman.setNextRequest(\"Shuffle\");\r",
+							"\r",
+							"} else {\r",
+							"    console.log(\"Error found in New Deck Request\")\r",
+							"    \r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://deckofcardsapi.com/api/deck/new/",
+					"protocol": "https",
+					"host": [
+						"deckofcardsapi",
+						"com"
+					],
+					"path": [
+						"api",
+						"deck",
+						"new",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shuffle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var status = pm.response.code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"if (status == 200) {\r",
+							"var_deck_id = jsonData.deck_id;\r",
+							"console.log(\"Deck_ID=\",var_deck_id);\r",
+							"pm.globals.set(\"evar_deck_id\", var_deck_id);\r",
+							"postman.setNextRequest(\"Draw Card to Player1\");\r",
+							"}\r",
+							"else {\r",
+							"    console.log(\"Error found in Shuffle Request\")\r",
+							"    \r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=6",
+					"protocol": "https",
+					"host": [
+						"deckofcardsapi",
+						"com"
+					],
+					"path": [
+						"api",
+						"deck",
+						"new",
+						"shuffle",
+						""
+					],
+					"query": [
+						{
+							"key": "deck_count",
+							"value": "6"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Draw Card to Player1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var status = pm.response.code;\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var responseJson = JSON.parse(responseBody);\r",
+							"if (status == 200) {\r",
+							"var cardarray=[];\r",
+							"var list = (responseJson.cards).length;\r",
+							"for (var i = 0; i < list; i++) \r",
+							"                  {\r",
+							"                  var counter = responseJson.cards[i];\r",
+							"                   cardValue=counter.value \r",
+							"                     cardarray.push(cardValue)\r",
+							"                  }\r",
+							"                 console.log(\"Player 1 set of cards are\",cardarray)\r",
+							"            \r",
+							"    var count=cardarray.length;\r",
+							"    var sum=0;\r",
+							"for (var i=0;i< count;i++)\r",
+							"    {\r",
+							"    if (cardarray[i]=='KING'||cardarray[i]=='JACK'||cardarray[i]=='QUEEN')\r",
+							"    {cardarray[i]=10\r",
+							"    sum=sum+cardarray[i]\r",
+							"    }\r",
+							"    else if (cardarray[i]=='ACE')\r",
+							"    {cardarray[i]=11\r",
+							"    sum=sum+cardarray[i]\r",
+							"    }\r",
+							"    else{\r",
+							"    sum=sum+parseInt(cardarray[i])\r",
+							"    }\r",
+							"   \r",
+							"    }\r",
+							"  if (sum >21){\r",
+							"       for (var i=0;i< count;i++)\r",
+							"       {   \r",
+							"           if (cardarray[i]==11){\r",
+							"           sum=sum-10\r",
+							"           }\r",
+							"       } \r",
+							"\r",
+							"    }\r",
+							"Player1Total=sum\r",
+							"console.log(\"The sum of cards for player 1 is \",sum)\r",
+							"pm.globals.set(\"Player1Total\", sum);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://deckofcardsapi.com/api/deck/{{evar_deck_id}}/draw/?count=3",
+					"protocol": "https",
+					"host": [
+						"deckofcardsapi",
+						"com"
+					],
+					"path": [
+						"api",
+						"deck",
+						"{{evar_deck_id}}",
+						"draw",
+						""
+					],
+					"query": [
+						{
+							"key": "count",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Draw Card to Player2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var status = pm.response.code;\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var responseJson = JSON.parse(responseBody);\r",
+							"if (status == 200) {\r",
+							"var cardarray=[];\r",
+							"var list = (responseJson.cards).length;\r",
+							"for (var i = 0; i < list; i++) \r",
+							"                  {\r",
+							"                   var counter = responseJson.cards[i];\r",
+							"                    cardValue=counter.value \r",
+							"                    cardarray.push(cardValue)\r",
+							"                  }\r",
+							"                    console.log(\"Player 2 set of cards are\",cardarray)\r",
+							"                  \r",
+							"    var count=cardarray.length;\r",
+							"    var sum=0;\r",
+							"for (var i=0;i< count;i++)\r",
+							"    {\r",
+							"    if (cardarray[i]=='KING'||cardarray[i]=='JACK'||cardarray[i]=='QUEEN')\r",
+							"    {cardarray[i]=10\r",
+							"    sum=sum+cardarray[i]\r",
+							"    }\r",
+							"    else if (cardarray[i]=='ACE')\r",
+							"    {cardarray[i]=11\r",
+							"    sum=sum+cardarray[i]\r",
+							"    }\r",
+							"    else\r",
+							"    sum=sum+parseInt(cardarray[i])\r",
+							"   }\r",
+							"   \r",
+							"\r",
+							"    if (sum>21){\r",
+							"       for (var i=0;i< count;i++)\r",
+							"       {\r",
+							"           if (cardarray[i]==11){\r",
+							"           sum=sum-10\r",
+							"           }\r",
+							"       } \r",
+							"\r",
+							"    }\r",
+							" Player2Total=sum\r",
+							" Player1Total=pm.globals.get(\"Player1Total\")\r",
+							"console.log(\"The sum of cards for player 2 is \",sum)\r",
+							"pm.globals.set(\"Player2Total\", sum);\r",
+							"console.log(\"Player 1 total is\",Player1Total)\r",
+							"console.log(\"Player 2 total is\",Player2Total)\r",
+							"if (Player1Total<=21&& Player1Total>Player2Total){\r",
+							"   console.log(\"Player 1 has blackjack\") \r",
+							"}\r",
+							"else if (Player1Total<=21&&Player2Total>21)\r",
+							"{\r",
+							"   console.log(\"Player 1 has blackjack\")  \r",
+							"}\r",
+							"\r",
+							"else if (Player2Total<=21&&Player2Total>Player1Total)\r",
+							"{\r",
+							"   console.log(\"Player 2 has blackjack\")  \r",
+							"}\r",
+							"else if (Player2Total<=21&&Player1Total>21)\r",
+							"{\r",
+							"   console.log(\"Player 2 has blackjack\")  \r",
+							"}\r",
+							"else if (Player1Total>21&&Player2Total>21){\r",
+							"   console.log(\"Neither has blackjack\") \r",
+							"}\r",
+							"else if (Player1Total==Player2Total&&Player1Total<=21){\r",
+							"   console.log(\"Both wins\") \r",
+							"}\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://deckofcardsapi.com/api/deck/{{evar_deck_id}}/draw/?count=3",
+					"protocol": "https",
+					"host": [
+						"deckofcardsapi",
+						"com"
+					],
+					"path": [
+						"api",
+						"deck",
+						"{{evar_deck_id}}",
+						"draw",
+						""
+					],
+					"query": [
+						{
+							"key": "count",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
